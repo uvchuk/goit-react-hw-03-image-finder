@@ -14,6 +14,7 @@ class ImageGallery extends Component {
     status: 'idle',
     error: null,
     openedImage: null,
+    totalHits: null,
   };
 
   componentDidUpdate(prevProps) {
@@ -23,9 +24,14 @@ class ImageGallery extends Component {
       this.setState({ status: 'pending', page: 1 });
       galleryAPI
         .getImages(currentQuery)
-        .then(({ hits }) => {
+        .then(({ hits, totalHits }) => {
           if (hits.length > 0)
-            this.setState({ images: hits, status: 'resolved', page: 2 });
+            this.setState({
+              images: hits,
+              status: 'resolved',
+              page: 2,
+              totalHits,
+            });
           else
             return Promise.reject(
               new Error(`No matches with query: ${currentQuery}`)
@@ -50,7 +56,7 @@ class ImageGallery extends Component {
           }));
         else
           return Promise.reject(
-            new Error(`No more matches with query: ${currentQuery}`)
+            new Error(`No matches with query: ${currentQuery}`)
           );
       })
       .catch(error =>
@@ -72,7 +78,7 @@ class ImageGallery extends Component {
   };
 
   render() {
-    const { images, status, error, openedImage } = this.state;
+    const { images, status, error, openedImage, totalHits } = this.state;
     if (status === 'idle') return <h3>Enter your search request</h3>;
     if (status === 'pending') return <Loader />;
     if (status === 'rejected') return Notify.failure(error);
@@ -85,7 +91,13 @@ class ImageGallery extends Component {
               onClick={this.handleOpenPicture}
             />
           </ImageGalleryList>
-          <Button onClick={this.onLoadMore} />
+          {images.length < totalHits ? (
+            <Button onClick={this.onLoadMore} />
+          ) : (
+            Notify.failure(
+              `Last matches with query: ${this.props.searchQuery}`
+            )
+          )}
           {openedImage && (
             <Modal
               openedImage={openedImage}
