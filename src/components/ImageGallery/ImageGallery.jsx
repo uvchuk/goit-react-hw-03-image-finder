@@ -94,9 +94,7 @@ class ImageGallery extends Component {
           {images.length < totalHits ? (
             <Button onClick={this.onLoadMore} />
           ) : (
-            Notify.failure(
-              `Last matches with query: ${this.props.searchQuery}`
-            )
+            Notify.info(`Last matches with query: ${this.props.searchQuery}`)
           )}
           {openedImage && (
             <Modal
