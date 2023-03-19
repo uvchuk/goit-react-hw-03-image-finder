@@ -1,10 +1,23 @@
 import { Component } from 'react';
+import SearchBar from './Searchbar/Searchbar';
+import ImageGallery from './ImageGallery/ImageGallery';
 
 class App extends Component {
-  state = {};
+  state = {
+    query: '',
+  };
+
+  handleGetQuery = searchQuery => {
+    this.setState({ query: searchQuery });
+  };
+
   render() {
-    return <h1>Hello!</h1>;
+    return (
+      <>
+        <SearchBar onSubmit={this.handleGetQuery} />
+        <ImageGallery searchQuery={this.state.query} />
+      </>
+    );
   }
 }
-
 export default App;
